@@ -1,0 +1,38 @@
+cat .aws/credentials
+
+aws configure
+
+aws configure set aws_session_token IQoJb3JpZ2luX2VjEOL//////////wEaCXVzLXdlc3QtMiJIMEYCIQCxH+CJyaqFHDPNk6vXwQTE1lAE+nx7UX6w9pEQ+skacgIhAObp52N3pHkkgh1i0Z/VFsC/3lX8oG0cQ32a7YHBl3jgKrQCCHsQARoMMjk4Mjk3MDI3NjQwIgzAGA2oHg5oUApE5osqkQKo0WwxqfH5Hn8VF+/M1qL0RkaMMR8LRgtOZxJuuysOIXfVibrAgV6rCjixVdLnbIe5EP1b7F4Y4ytep5kPisgG+f+yZMO5XjGpl+Fif9YKE1BaJQDl6niglbUdtqkV5t0ONq2Muv7/WCC44nhnenD4+nFA3dovuF/fSYsmIOCSugqQnE4BtBaCADw61nObXyORRL7EYRV+ItSZl+zvaZ3OYelEbOocU5i2egHNDTVTDs5F7pHxC6oDG2Jm7iv/LFrWYA6+8V1Opt76OOlDZ1cXhGEcrIbqdyCfLwgkdZvTR6lwE/VONI4eduarnOXIXBEEX8RFymhaKO0YKdU4dEtQqWm3iRfe8EgYe9dodqR0RTUwvfu+wAY6nAGy5N+jV+umqNAJAsJORofHIZEG1BxXybBFP6BTvy8sWvihbQPsEFqBwkeyc8fLh86KPmSZR9nzSixl1CpT1bFYmP9ICpy30Z3vgycS+mrJOMElLb7g4PvLquYjl+b65cm2l7zI2o+PDieHgcIFZzAZqAOtskds/apEjN3VKcOMb6foWAQPEkwwjpsIMHM7c40iblPqO5EPv9NmuA0=
+
+#Atualizar um dockerfile
+docker build -t [nome] .
+docker tag [nome] [nome/repository:tag]
+docker push [nome/repository:tag]
+
+docker build -t earth-moon-back-end .  
+docker tag earth-moon-back-end mirandark/earth-moon-back-end:[versão]
+docker push mirandark/earth-moon-back-end:[versão]
+
+docker build -t earth-moon-front-end .  
+docker tag earth-moon-front-end mirandark/earth-moon-front-end:[versão]
+docker push mirandark/earth-moon-front-end:[versão]
+
+terraform init
+
+terraform import aws_eip.ip_instancia-publica [id elastic ip pública]
+terraform import aws_eip.ip_instancia-privada [id elastic ip privada]
+
+#Iniciar um dockerfile
+docker run -p 8080:8080 -d mirandark/earth-moon-back-end:latest
+docker run -p 3000:3000 -d mirandark/earth-moon-front-end:v1.0
+
+
+scp -i keys/autohub_chave.pem keys/autohub_chave.pem ubuntu@52.203.203.23:/home/ubuntu/.ssh/autohub_chave.pem
+
+#Testes de requisições
+curl -v localhost:8080/usuarios/1
+
+curl -v http://10.0.1.5:8080/usuarios/1
+
+reveste
+Re01020304

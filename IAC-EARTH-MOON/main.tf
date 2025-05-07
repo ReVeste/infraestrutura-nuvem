@@ -39,6 +39,10 @@ resource "aws_eip" "ip_instancia-publica" {
     Name = "EARTH-MOON-NOVO-IP-PUBLICA"
   }
 
+  lifecycle {
+    prevent_destroy = true
+  }
+
 }
 
 resource "aws_eip_association" "assoc_ip_publica" {
@@ -51,6 +55,10 @@ resource "aws_eip" "ip_instancia-privada" {
 
   tags = {
     Name = "EARTH-MOON-NOVO-IP-PRIVADO"
+  }
+
+  lifecycle {
+    prevent_destroy = true
   }
 
 }

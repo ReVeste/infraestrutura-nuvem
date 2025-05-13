@@ -27,7 +27,7 @@ docker run -p 8080:8080 -d mirandark/earth-moon-back-end:latest
 docker run -p 3000:3000 -d mirandark/earth-moon-front-end:v1.0
 
 
-scp -i keys/autohub_chave.pem keys/autohub_chave.pem ubuntu@52.203.203.23:/home/ubuntu/.ssh/autohub_chave.pem
+scp -i keys/earth_moon.pem keys/earth_moon.pem ubuntu@107.23.40.115:/home/ubuntu/.ssh/earth_moon.pem
 
 #Testes de requisições
 curl -v localhost:8080/usuarios/1

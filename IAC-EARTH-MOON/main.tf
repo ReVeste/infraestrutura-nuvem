@@ -50,23 +50,6 @@ resource "aws_eip_association" "assoc_ip_publica" {
   allocation_id = aws_eip.ip_instancia-publica.id
 }
 
-resource "aws_eip" "ip_instancia-privada" {
-  vpc = true
-
-  tags = {
-    Name = "EARTH-MOON-NOVO-IP-PRIVADO"
-  }
-
-  lifecycle {
-    prevent_destroy = true
-  }
-
-}
-
-resource "aws_eip_association" "assoc_ip_privada" {
-  instance_id   = module.instances.private_instance_id
-  allocation_id = aws_eip.ip_instancia-privada.id
-}
 
 # scp -i keys/autohub_chave.pem keys/autohub_chave.pem ubuntu@52.203.203.23:/home/ubuntu/.ssh/autohub_chave.pem	
 # ssh -i "keys/autohub_chave.pem" ubuntu@ec2-52-203-203-23.compute-1.amazonaws.com

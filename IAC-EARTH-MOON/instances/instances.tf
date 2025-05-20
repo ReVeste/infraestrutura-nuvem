@@ -148,7 +148,7 @@ resource "aws_instance" "ec2_privada" {
             sudo usermod -aG docker $USER
             newgrp docker
 
-            sudo docker run -p 8080:8080 -d mirandark/earth-moon-back-end:v2.2
+            sudo docker run -p 8080:8080 -d ketelynmedina/earth-moon-backend:v1.0
           EOF
 
   tags = {
@@ -188,7 +188,7 @@ resource "aws_instance" "ec2_privada_2" {
             sudo usermod -aG docker $USER
             newgrp docker
 
-            sudo docker run -p 8080:8080 -d mirandark/earth-moon-back-end:v2.2
+            sudo docker run -p 8080:8080 -d ketelynmedina/earth-moon-backend:v1.0
           EOF
 
   tags = {

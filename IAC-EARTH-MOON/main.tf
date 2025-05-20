@@ -39,9 +39,6 @@ resource "aws_eip" "ip_instancia-publica" {
     Name = "EARTH-MOON-NOVO-IP-PUBLICA"
   }
 
-  lifecycle {
-    prevent_destroy = true
-  }
 
 }
 
@@ -50,9 +47,13 @@ resource "aws_eip_association" "assoc_ip_publica" {
   allocation_id = aws_eip.ip_instancia-publica.id
 }
 
+# importar ip elastico 
+# terraform import aws_eip.ip_instancia-publica eipalloc-0feceac718b2c971d
 
-# scp -i keys/autohub_chave.pem keys/autohub_chave.pem ubuntu@52.203.203.23:/home/ubuntu/.ssh/autohub_chave.pem	
-# ssh -i "keys/autohub_chave.pem" ubuntu@ec2-52-203-203-23.compute-1.amazonaws.com
+# copiar chave pem para pública
+# scp -i keys/earth_moon.pem keys/earth_moon.pem ubuntu@107.23.40.115:/home/ubuntu/.ssh/earth_moon.pem
+
+# ssh -i "keys/earth_moon.pem" ubuntu@ec2-107-23-40-115.compute-1.amazonaws.com
 # http://3.91.241.173/api/swagger-ui/index.html
 # docker run -p 8080:8080 -d matteusnogueira/autohub-backend:v1
 # docker logs $(docker ps -q --filter matteusnogueira/autohub-backend)

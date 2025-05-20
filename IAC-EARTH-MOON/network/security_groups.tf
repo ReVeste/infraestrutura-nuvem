@@ -64,7 +64,7 @@ resource "aws_security_group" "security_private" {
     from_port       = 1433
     to_port         = 1433
     protocol        = "tcp"
-    security_groups = [aws_security_group.security_private.id]
+    self            = true
   }
 
   egress {

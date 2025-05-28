@@ -222,3 +222,5 @@ output "private_instance_id" {
   value = aws_instance.ec2_privada.id
   description = "ID da instância EC privado"
 }
+
+#a

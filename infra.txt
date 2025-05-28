@@ -2,7 +2,7 @@ cat .aws/credentials
 
 aws configure
 
-aws configure set aws_session_token IQoJb3JpZ2luX2VjEOL//////////wEaCXVzLXdlc3QtMiJIMEYCIQCxH+CJyaqFHDPNk6vXwQTE1lAE+nx7UX6w9pEQ+skacgIhAObp52N3pHkkgh1i0Z/VFsC/3lX8oG0cQ32a7YHBl3jgKrQCCHsQARoMMjk4Mjk3MDI3NjQwIgzAGA2oHg5oUApE5osqkQKo0WwxqfH5Hn8VF+/M1qL0RkaMMR8LRgtOZxJuuysOIXfVibrAgV6rCjixVdLnbIe5EP1b7F4Y4ytep5kPisgG+f+yZMO5XjGpl+Fif9YKE1BaJQDl6niglbUdtqkV5t0ONq2Muv7/WCC44nhnenD4+nFA3dovuF/fSYsmIOCSugqQnE4BtBaCADw61nObXyORRL7EYRV+ItSZl+zvaZ3OYelEbOocU5i2egHNDTVTDs5F7pHxC6oDG2Jm7iv/LFrWYA6+8V1Opt76OOlDZ1cXhGEcrIbqdyCfLwgkdZvTR6lwE/VONI4eduarnOXIXBEEX8RFymhaKO0YKdU4dEtQqWm3iRfe8EgYe9dodqR0RTUwvfu+wAY6nAGy5N+jV+umqNAJAsJORofHIZEG1BxXybBFP6BTvy8sWvihbQPsEFqBwkeyc8fLh86KPmSZR9nzSixl1CpT1bFYmP9ICpy30Z3vgycS+mrJOMElLb7g4PvLquYjl+b65cm2l7zI2o+PDieHgcIFZzAZqAOtskds/apEjN3VKcOMb6foWAQPEkwwjpsIMHM7c40iblPqO5EPv9NmuA0=
+aws configure set aws_session_token IQoJb3JpZ2luX2VjED8aCXVzLXdlc3QtMiJGMEQCICXo6y8v92xCFkJuVMBDffiGpBh2oyEFGHqmfT5iC1N2AiAt8803YXsTOh+k9dXWy7VFtQNqTQRdqSVKQm6O/eD2OCq9Agj4//////////8BEAEaDDI5ODI5NzAyNzY0MCIMQMYPVgst/yyQ7lwmKpECdmL5y5isGxoxahA0BFZ0TnRxrfmpbiYLwANedzB57MXOCRlVEW4fYNCX3pvYJB8aiChQIDD3erG+u4SSzHWkkRHIBBWeGNgWU/VPnDYvds9nvr758KTTDtHU6U4hOCKPJjensdeJ5v1Cx3kGpI1LdOyrJFDaAjyGyLM2YckBfYd3yUaokZLAqxShEoEfLtANgglOz39UX6wkYRWCOx6gJL9UZxoky9muQKVx+wx71GjmyO7f5I060mNhWim65wnwMLNzU+8r9QusLnbzYx8NblMYrUwWr618SESDD00V0O9uf/7et+WYujC/qZ5p+8YwnfwIKcvWo2KCicsfGL7ardxQssogUdHeY62F8T3/uHmTMMH8w8EGOp4B7BAhOZysLwpRTI384RVI0oxGbHerWSZAhmj1EO7JZqJiGMrdzzIUxVNTIqMDJeGNapD2uNPT8ioo/QYPzPttONfrlywWtNgvPRf/GErN7502RYjM6NeDtmOD4LL4O1fIfLIKnQoNsRgqwa7iPvgRFRlg5ZJhqLn0qAPmXpYKS7wMJ9H6HPEadjUPmbdG2KcaTb9tMZwNj7PsQMQ5hmI=
 
 #Atualizar um dockerfile
 docker build -t [nome] .
@@ -10,24 +10,26 @@ docker tag [nome] [nome/repository:tag]
 docker push [nome/repository:tag]
 
 docker build -t earth-moon-back-end .  
-docker tag earth-moon-back-end mirandark/earth-moon-back-end:[versão]
-docker push mirandark/earth-moon-back-end:[versão]
+docker tag earth-moon-back-end mirandark/earth-moon-back-end:sprint3-v0.0
+docker push mirandark/earth-moon-back-end:sprint3-v0.0
 
 docker build -t earth-moon-front-end .  
-docker tag earth-moon-front-end mirandark/earth-moon-front-end:[versão]
-docker push mirandark/earth-moon-front-end:[versão]
+docker tag earth-moon-front-end mirandark/earth-moon-front-end:sprint3-v0.0
+docker push mirandark/earth-moon-front-end:sprint3-v0.0
 
 terraform init
 
 terraform import aws_eip.ip_instancia-publica [id elastic ip pública]
 terraform import aws_eip.ip_instancia-privada [id elastic ip privada]
 
+http://52.86.31.207/
+
 #Iniciar um dockerfile
 docker run -p 8080:8080 -d mirandark/earth-moon-back-end:latest
 docker run -p 3000:3000 -d mirandark/earth-moon-front-end:v1.0
 
 
-scp -i keys/autohub_chave.pem keys/autohub_chave.pem ubuntu@52.203.203.23:/home/ubuntu/.ssh/autohub_chave.pem
+scp -i keys/earth_moon.pem keys/earth_moon.pem ubuntu@34.225.255.61:/home/ubuntu/.ssh/earth_moon.pem
 
 #Testes de requisições
 curl -v localhost:8080/usuarios/1
@@ -36,3 +38,27 @@ curl -v http://10.0.1.5:8080/usuarios/1
 
 reveste
 Re01020304
+
+grupo de segurança 
+privado
+sg-0568527a3538fecbb (terraform-20250513224808740800000002) 
+
+
+sqsh -S localhost -U sa -P sqsh -S localhost -U sa -P 654Y53S5d:i
+sqsh -S localhost -U sa -P 654Y53S5d:i^
+sqsh -S 10.0.1.177 -U sa -P 654Y53S5d:i^
+
+
+654Y53S5d:i^
+
+654Y53S5d:i^
+654Y53S5d:i^
+
+654Y53S5d:i^
+654Y53S5d:i^
+654Y53S5d:i^
+654Y53S5d:i^
+654Y53S5d:i^
+
+654Y53S5d:i^
+654Y53S5d:i^

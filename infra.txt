@@ -1,8 +1,10 @@
+#Configurando aws para usar terraform e afins
+#após iniciar o laboratório na aws rodar o comando:
 cat .aws/credentials
 
 aws configure
 
-aws configure set aws_session_token IQoJb3JpZ2luX2VjED8aCXVzLXdlc3QtMiJGMEQCICXo6y8v92xCFkJuVMBDffiGpBh2oyEFGHqmfT5iC1N2AiAt8803YXsTOh+k9dXWy7VFtQNqTQRdqSVKQm6O/eD2OCq9Agj4//////////8BEAEaDDI5ODI5NzAyNzY0MCIMQMYPVgst/yyQ7lwmKpECdmL5y5isGxoxahA0BFZ0TnRxrfmpbiYLwANedzB57MXOCRlVEW4fYNCX3pvYJB8aiChQIDD3erG+u4SSzHWkkRHIBBWeGNgWU/VPnDYvds9nvr758KTTDtHU6U4hOCKPJjensdeJ5v1Cx3kGpI1LdOyrJFDaAjyGyLM2YckBfYd3yUaokZLAqxShEoEfLtANgglOz39UX6wkYRWCOx6gJL9UZxoky9muQKVx+wx71GjmyO7f5I060mNhWim65wnwMLNzU+8r9QusLnbzYx8NblMYrUwWr618SESDD00V0O9uf/7et+WYujC/qZ5p+8YwnfwIKcvWo2KCicsfGL7ardxQssogUdHeY62F8T3/uHmTMMH8w8EGOp4B7BAhOZysLwpRTI384RVI0oxGbHerWSZAhmj1EO7JZqJiGMrdzzIUxVNTIqMDJeGNapD2uNPT8ioo/QYPzPttONfrlywWtNgvPRf/GErN7502RYjM6NeDtmOD4LL4O1fIfLIKnQoNsRgqwa7iPvgRFRlg5ZJhqLn0qAPmXpYKS7wMJ9H6HPEadjUPmbdG2KcaTb9tMZwNj7PsQMQ5hmI=
+aws configure set aws_session_token IQoJb3JpZ2luX2VjEEYaCXVzLXdlc3QtMiJHMEUCIQC1oJBTVvW2hWT/Yzg7VIwwBDNXwPEr+tWhQnkeFsjVtQIgNuA0pKQ7mf0Ey5o1bqrIcS3frbplgm461AdMFkok/WcqswIIHxAAGgw1Mjc4MTQyMDk1NzYiDJ/5jqlmjkvpCEw2miqQAjuF840UnaPUaA72wzEmzzLmWaHhF+QIZRUl18T2n2pfYf7f6c5dmbByhLxg0x2pwIA2e92H0zVh81r+S6yA1DR0eRIwBfTngduQ01w7SQgHTqnxnmNcEv/JlAnKc+Jrq6TSgL5gumDYJBZJF2blBeaySsM2MoA7RgZFTnWL8O92LvBGPK+V/6uxJyb7deqQTYjn6lzyhRScMW+xfumFcjZbmq2ly1h1d5uW+q9/7oFcDVCm2lOTy1WTBgCe6HerBR947VDv+KguLLWCE0vuNJVdE1YyKzWSYi3V0OvmQchzgSzQwjn/A9Bpqz2E0T1b5dfx/IWxJkqM9slYWUlBvIT7alTxJwH+iLMybPOMfiR9MMLh/cEGOp0Bd3ZN7khkdo+ptH2LSacomYmx4enxZ5ma2fPW2Se8n9yjHZS8anomxVWjPm6psuhLBZUJCSuyGRIDE9u1yt4kU95/vC3tPvoUHRDeoopYxvfDbr4XX9ytkJFvNywkM2+uLMQyy+H0xy7VTaU1RKVCMonXJX0HewtCLAnUivrsELGi5k5/dAw0eIj/h2UaZnP+rTRwoGIH7qBmrTy7Mg==
 
 #Atualizar um dockerfile
 docker build -t [nome] .
@@ -10,17 +12,22 @@ docker tag [nome] [nome/repository:tag]
 docker push [nome/repository:tag]
 
 docker build -t earth-moon-back-end .  
-docker tag earth-moon-back-end mirandark/earth-moon-back-end:sprint3-v0.0
-docker push mirandark/earth-moon-back-end:sprint3-v0.0
+docker tag earth-moon-back-end mirandark/earth-moon-back-end:sprint3-C1-v0.0
+docker push mirandark/earth-moon-back-end:sprint3-C1-v0.0
 
 docker build -t earth-moon-front-end .  
-docker tag earth-moon-front-end mirandark/earth-moon-front-end:sprint3-v0.0
-docker push mirandark/earth-moon-front-end:sprint3-v0.0
+docker tag earth-moon-front-end mirandark/earth-moon-front-end:sprint3-C1-v0.0
+docker push mirandark/earth-moon-front-end:sprint3-C1-v0.0
 
 terraform init
 
 terraform import aws_eip.ip_instancia-publica [id elastic ip pública]
+terraform import aws_eip.ip_instancia-publica eipalloc-06fc1a1880eb93578
 terraform import aws_eip.ip_instancia-privada [id elastic ip privada]
+terraform import aws_eip.ip_instancia-privada eipalloc-015db1bcf7d0bb94f
+
+terraform state rm aws_eip.ip_instancia-privada
+terraform state rm aws_eip.ip_instancia-publica
 
 http://52.86.31.207/
 
@@ -47,18 +54,17 @@ sg-0568527a3538fecbb (terraform-20250513224808740800000002)
 sqsh -S localhost -U sa -P sqsh -S localhost -U sa -P 654Y53S5d:i
 sqsh -S localhost -U sa -P 654Y53S5d:i^
 sqsh -S 10.0.1.177 -U sa -P 654Y53S5d:i^
-
-
 654Y53S5d:i^
 
-654Y53S5d:i^
-654Y53S5d:i^
+Erro para conectar mdar o host
+ssh-keygen -R ec2-3-209-222-70.compute-1.amazonaws.com
 
-654Y53S5d:i^
-654Y53S5d:i^
-654Y53S5d:i^
-654Y53S5d:i^
-654Y53S5d:i^
 
-654Y53S5d:i^
-654Y53S5d:i^
+sudo Docker os -a
+ver os containers
+
+sudo Docker logs [id do container]
+ver o log
+
+sg-0568527a3538fecbb (terraform-20250513224808740800000002)
+sg-0568527a3538fecbb (terraform-20250513224808740800000002)s

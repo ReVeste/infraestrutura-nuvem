@@ -23,8 +23,14 @@ variable "security_private_id" {
   type        = string
 }
 
+data "template_file" "nginx_config" {
+  template = file("${path.module}/nginx-default.conf.tpl")
 
-
+  vars = {
+    backend1 = aws_instance.ec2_privada.private_ip
+    backend2 = aws_instance.ec2_privada_2.private_ip
+  }
+}
 
 resource "aws_instance" "ec2_publica" {
   ami             = "ami-0f9de6e2d2f067fca"
@@ -33,88 +39,49 @@ resource "aws_instance" "ec2_publica" {
   key_name        = aws_key_pair.earth_moon.key_name
   security_groups = [var.security_public_id]
 
+  user_data = <<-EOF
+              #!/bin/bash
+              apt-get update -y
+              apt-get install nginx -y
 
-  user_data = <<-EOF2
-            #!/bin/bash
+              echo '${data.template_file.nginx_config.rendered}' > /etc/nginx/sites-available/default
+              systemctl restart nginx
 
-            sudo apt-get update -y
-            sudo apt install nginx -y
+              apt-get install ca-certificates curl -y
+              install -m 0755 -d /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+              chmod a+r /etc/apt/keyrings/docker.asc
 
-            sudo bash -c 'cat > /etc/nginx/sites-available/default' <<EOL
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-            upstream backend_servers {
-                least_conn;
-                server ${aws_instance.ec2_privada.private_ip}:8080;
-                server ${aws_instance.ec2_privada_2.private_ip}:8080;
-            }
+              apt-get update -y
+              apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
-            server {
-                listen 80;
-                server_name _;
+              systemctl start docker
+              systemctl enable docker
 
-                 location /api/ {
-                    proxy_pass http://backend_servers;
-                    proxy_set_header Host $$host;
-                    proxy_set_header X-Real-IP $$remote_addr;
-                    proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto $$scheme;
-                  }
+              cat <<EOL > /home/ubuntu/docker-compose-front-end.yaml
+              version: '3.8'
 
-                  location ~* /swagger-ui/ {
-                      proxy_pass http://backend_servers;
-                      proxy_set_header Host $$host;
-                      proxy_set_header X-Real-IP $$remote_addr;
-                      proxy_set_header X-Forwarded-For $$proxy_add_x_forwarded_for;
-                      proxy_set_header X-Forwarded-Proto $$scheme;
-                  }
+              services:
+                front_end_1:
+                  image: mirandark/earth-moon-front-end:latest
+                  ports:
+                    - "3000:80"
 
-                  location / {
-                      proxy_pass http://localhost:3000;
-                      proxy_http_version 1.1;
-                      proxy_set_header Upgrade $$http_upgrade;
-                      proxy_set_header Connection 'upgrade';
-                      proxy_set_header Host $$host;
-                      proxy_cache_bypass $$http_upgrade;
-                  }
-            }
+                front_end_2:
+                  image: mirandark/earth-moon-front-end:latest
+                  ports:
+                    - "3001:80"
+              EOL
 
-            EOL
-
-            sudo systemctl restart nginx
-
-
-            sudo apt-get update -y
-            sudo apt-get install ca-certificates curl
-
-            sudo install -m 0755 -d /etc/apt/keyrings -y
-            sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-            sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-            echo \
-              "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-              $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-              sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-            sudo apt-get update -y
-            sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-
-            sudo systemctl start docker
-            sudo systemctl enable docker
-
-            sudo groupadd docker
-            sudo usermod -aG docker $USER
-            newgrp docker
-
-            sudo docker run -p 3000:80 -d mirandark/earth-moon-front-end:sprint3-v0.0
-
-
-          EOF2
+              docker compose -f /home/ubuntu/docker-compose-front-end.yaml up -d
+            EOF
 
   tags = {
     Name = "EARTH-MOON-PUBLICA"
   }
 }
-
 
 resource "aws_instance" "ec2_privada" {
   ami             = "ami-0f9de6e2d2f067fca"
@@ -124,35 +91,59 @@ resource "aws_instance" "ec2_privada" {
   security_groups = [var.security_private_id]
 
   user_data = <<-EOF
-            #!/bin/bash
-            
-            sudo apt-get update -y
-            sudo apt-get install ca-certificates curl
+#!/bin/bash
+set -xe
 
-            sudo install -m 0755 -d /etc/apt/keyrings
-            sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-            sudo chmod a+r /etc/apt/keyrings/docker.asc
+# Atualize os pacotes
+apt update -y
 
-            echo \
-              "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-              $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-              sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+# Instale pacotes necessários para usar o repositório Docker
+apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg lsb-release
 
-            sudo apt-get update -y
-            sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+# Adicione a chave GPG do Docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
-            sudo systemctl start docker
-            sudo systemctl enable docker
+# Adicione o repositório Docker às fontes APT
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 
-            sudo groupadd docker
-            sudo usermod -aG docker $USER
-            newgrp docker
+# Atualize o APT novamente
+apt update -y
 
-            sudo docker run -p 8080:8080 -d mirandark/earth-moon-back-end:sprint3-v0.0
-          EOF
+# Instale o Docker e o plugin docker-compose
+apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+# Adicione o usuário ubuntu ao grupo docker para permitir executar docker sem sudo
+usermod -aG docker ubuntu
+
+# Ativa e inicia o serviço docker
+systemctl enable docker
+systemctl start docker
+
+# Cria arquivo docker-compose (heredoc sem indentação)
+cat <<EOL > /home/ubuntu/docker-compose-back-end.yaml
+version: '3.8'
+
+services:
+  back_end_1:
+    image: mirandark/earth-moon-back-end:latest
+    ports:
+      - "8080:80"
+
+  back_end_2:
+    image: mirandark/earth-moon-back-end:latest
+    ports:
+      - "8081:80"
+EOL
+
+# Ajusta propriedade do arquivo para o usuário ubuntu
+chown ubuntu:ubuntu /home/ubuntu/docker-compose-back-end.yaml
+
+# Executa o docker compose como usuário ubuntu
+runuser -l ubuntu -c "docker compose -f /home/ubuntu/docker-compose-back-end.yaml up -d"
+EOF
 
   tags = {
-    Name = "EARTH-MOON-PRIVADA"
+    Name = "EARTH-MOON-PRIVADA-1"
   }
 }
 
@@ -164,35 +155,59 @@ resource "aws_instance" "ec2_privada_2" {
   security_groups = [var.security_private_id]
 
   user_data = <<-EOF
-            #!/bin/bash
-            
-            sudo apt-get update -y
-            sudo apt-get install ca-certificates curl
+#!/bin/bash
+set -xe
 
-            sudo install -m 0755 -d /etc/apt/keyrings
-            sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-            sudo chmod a+r /etc/apt/keyrings/docker.asc
+# Atualize os pacotes
+apt update -y
 
-            echo \
-              "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-              $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-              sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+# Instale pacotes necessários para usar o repositório Docker
+apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg lsb-release
 
-            sudo apt-get update -y
-            sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+# Adicione a chave GPG do Docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
 
-            sudo systemctl start docker
-            sudo systemctl enable docker
+# Adicione o repositório Docker às fontes APT
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 
-            sudo groupadd docker
-            sudo usermod -aG docker $USER
-            newgrp docker
+# Atualize o APT novamente
+apt update -y
 
-            sudo docker run -p 8080:8080 -d mirandark/earth-moon-back-end:sprint3-v0.0
-          EOF
+# Instale o Docker e o plugin docker-compose
+apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+# Adicione o usuário ubuntu ao grupo docker para permitir executar docker sem sudo
+usermod -aG docker ubuntu
+
+# Ativa e inicia o serviço docker
+systemctl enable docker
+systemctl start docker
+
+# Cria arquivo docker-compose (heredoc sem indentação)
+cat <<EOL > /home/ubuntu/docker-compose-back-end.yaml
+version: '3.8'
+
+services:
+  back_end_1:
+    image: mirandark/earth-moon-back-end:latest
+    ports:
+      - "8080:80"
+
+  back_end_2:
+    image: mirandark/earth-moon-back-end:latest
+    ports:
+      - "8081:80"
+EOL
+
+# Ajusta propriedade do arquivo para o usuário ubuntu
+chown ubuntu:ubuntu /home/ubuntu/docker-compose-back-end.yaml
+
+# Executa o docker compose como usuário ubuntu
+runuser -l ubuntu -c "docker compose -f /home/ubuntu/docker-compose-back-end.yaml up -d"
+EOF
 
   tags = {
-    Name = "EARTH-MOON-PRIVADA"
+    Name = "EARTH-MOON-PRIVADA-2"
   }
 }
 
@@ -222,5 +237,3 @@ output "private_instance_id" {
   value = aws_instance.ec2_privada.id
   description = "ID da instância EC privado"
 }
-
-#a
